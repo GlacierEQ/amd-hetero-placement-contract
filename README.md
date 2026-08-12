@@ -119,25 +119,7 @@ Or stream JSON through stdin:
 cat request.json | hetero-place --pretty
 ```
 
-Successful output contains a real placement decision:
-
-```json
-{
-  "decision": "ALLOW",
-  "selected_target_id": "gpu-a",
-  "score": 0.0,
-  "reasons": ["feasible_target_selected"],
-  "metrics": {
-    "candidate_count": 2,
-    "feasible_count": 1,
-    "ranking": [],
-    "rejected": {}
-  },
-  "digest": "..."
-}
-```
-
-The exact score and ranking are computed from the supplied workload, targets, budget, and weights.
+The output is computed from the request. It contains the placement decision, selected target when one exists, deterministic score and ranking, rejected targets with reasons, score components, and a SHA-256 digest over the canonical decision inputs. No static sample receipt is presented as runtime evidence.
 
 ## Python API
 
