@@ -2,14 +2,17 @@ name: tests
 on:
   push:
   pull_request:
+
 jobs:
-  pytest:
+  behavior:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -r requirements.txt
+      - run: python -m pip install -e . pytest
       - run: python -m pytest -q
-      - run: python scripts/operate.py
+      - name: exercise placement CLI
+        run: |
+          printf '%s\n' '{"subject_id":"ci-smoke","budget":2.0,"workload":{"compute_tflops":10,"memory_gb":8,"latency_slo_ms":30,"power_limit_w":400},"targets":[{"target_id":"gpu-a","architecture":"gpu","compute_tflops":20,"memory_gb":16,"memory_bandwidth_gbps":500,"network_gbps":25,"estimated_latency_ms":8,"estimated_power_w":200,"cost_per_hour":1.0}]}' | hetero-place
