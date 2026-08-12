@@ -1,51 +1,95 @@
-# Heterogeneous Placement Contract
+# Heterogeneous Workload Placement Engine
 
-Independent GlacierEQ portfolio exhibit aligned to **AMD** operating themes.
+Independent GlacierEQ portfolio implementation aligned to public AMD operating themes. This repository is not affiliated with or endorsed by AMD.
 
-> **Not affiliated.** This repository is not affiliated with, endorsed by, employed by, or deployed at AMD.
-> No proprietary access, production deployment, customer impact, or company partnership is claimed.
+## Purpose
 
-## Bottleneck (GlacierEQ hypothesis)
+Given a workload and a caller-supplied heterogeneous topology, select the strongest feasible execution target or refuse placement with concrete reasons.
 
-Data movement, network synchronization, memory hierarchy, and software integration.
+The engine treats placement as an outcome problem rather than a policy gate. It evaluates:
 
-**Brick wall:** Supporting synchronized training, low-latency inference, and persistent agent workloads without utilization or power collapse.
+- device type
+- available compute after current utilization
+- available memory rather than nominal capacity
+- bandwidth
+- latency ceiling
+- privacy level
+- optional power cap
+- locality preference
+- energy-efficiency proxy
 
-**Observed public pressure (snapshot hypothesis):** AI workloads require coordinated CPU, GPU, networking, memory, and open software across training and inference.
+Hard constraints eliminate targets. Remaining candidates are deterministically ranked with transparent score components and stable tie-breaking.
 
-## Innovation mechanism
+## Run it
 
-**Heterogeneous Placement Contract** — Expose a placement descriptor (latency, energy, memory locality, privacy) and a deterministic placer that returns a bound execution target or explicit refusal.
+```bash
+python scripts/operate.py
+```
 
-## Target roles
+The default command executes a complete built-in workload/topology example and prints the placement receipt.
 
-- Applied AI Systems Architect
-- Forward-Deployed Engineer
-- AI Infrastructure / Governance Engineer
+To use your own topology:
 
-## Application move
+```bash
+python scripts/operate.py --input request.json --output placement.json
+```
 
-Present a vendor-neutral workload and topology analysis rather than brand-specific claims.
+Example request:
 
-## Current scaffold state
+```json
+{
+  "subject_id": "inference-batch-42",
+  "budget": 1.0,
+  "payload": {
+    "workload": {
+      "compute_tflops": 20,
+      "memory_gb": 16,
+      "bandwidth_gbps": 25,
+      "max_latency_ms": 15,
+      "device": "gpu",
+      "privacy": "trusted",
+      "locality": "rack-a"
+    },
+    "targets": [
+      {
+        "id": "node-a",
+        "device": "gpu",
+        "compute_tflops": 80,
+        "memory_gb": 64,
+        "available_memory_gb": 48,
+        "bandwidth_gbps": 100,
+        "latency_ms": 3,
+        "power_watts": 260,
+        "utilization": 0.20,
+        "privacy": "trusted",
+        "locality": "rack-a"
+      }
+    ]
+  }
+}
+```
 
-This leaf is a **scaffold**: contracts, tests, and a stub mechanism exist so another engineer/AI can fill production-grade code without inventing company affiliation.
+## Output
 
-| Surface | Path |
-|---------|------|
-| Mechanism stub | `src/hetero_placement_contract.py` |
-| Operate entry | `scripts/operate.py` |
-| Contract tests | `tests/` |
-| Target contract | `machine/target-contract.json` |
-| **AI fill-in brief** | **`DEV_UP_INSTRUCTIONS.md`** |
-| Issue contract | `ISSUE_CONTRACT.md` |
+A successful receipt contains:
 
-## Non-claims
+- selected target
+- deterministic score
+- ranked feasible candidates
+- rejected targets and rejection reasons
+- available compute and memory observations
+- deterministic SHA-256 receipt digest
 
-- No AMD employment, endorsement, proprietary data, or production use
-- No customer, revenue, latency, or scale claims without separate receipts
-- Scaffold tests define **intended behavior**, not verified production excellence
+A workload with no feasible target returns `REFUSE` and exit code `2` from the CLI.
 
-## Next gate
+## Verify behavior
 
-Create reproducible performance tests on available hardware or clearly simulated models.
+```bash
+python -m pytest -q
+```
+
+Tests cover feasible selection, no-feasible-target refusal, privacy, power caps, utilization pressure, available-memory pressure, device mismatch, deterministic ordering, duplicate identities, latency boundaries, and malformed requests.
+
+## Design boundary
+
+This implementation uses caller-supplied measurements. It is a reproducible placement algorithm, not a benchmark claim about real AMD hardware. The mechanism can later be connected to live telemetry without changing the placement contract.

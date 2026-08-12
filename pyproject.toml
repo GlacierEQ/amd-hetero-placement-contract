@@ -1,7 +1,7 @@
 [project]
 name = "amd-hetero-placement-contract"
-version = "0.0.1"
-description = "Scaffold: Heterogeneous Placement Contract (independent AMD lens)"
+version = "1.0.0"
+description = "Deterministic heterogeneous workload placement engine"
 requires-python = ">=3.11"
 dependencies = []
 
