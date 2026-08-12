@@ -1,9 +1,20 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "amd-hetero-placement-contract"
-version = "0.0.1"
-description = "Scaffold: Heterogeneous Placement Contract (independent AMD lens)"
+version = "1.0.0"
+description = "Deterministic vendor-neutral heterogeneous workload placement engine"
 requires-python = ">=3.11"
 dependencies = []
+
+[project.scripts]
+hetero-place = "hetero_placement_contract:main"
+
+[tool.setuptools]
+py-modules = ["hetero_placement_contract"]
+package-dir = {"" = "src"}
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
