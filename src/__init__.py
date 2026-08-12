@@ -1,4 +1,23 @@
-"""Heterogeneous Placement Contract — independent GlacierEQ scaffold."""
-from .hetero_placement_contract import HeterogeneousPlacementContract
+"""Deterministic heterogeneous workload placement engine."""
 
-__all__ = ["HeterogeneousPlacementContract"]
+from .hetero_placement_contract import (
+    Decision,
+    HeterogeneousPlacementContract,
+    HeterogeneousPlacementContractReceipt,
+    HeterogeneousPlacementContractRequest,
+    PlacementTarget,
+    PlacementWeights,
+    PrivacyLevel,
+    WorkloadSpec,
+)
+
+__all__ = [
+    "Decision",
+    "HeterogeneousPlacementContract",
+    "HeterogeneousPlacementContractReceipt",
+    "HeterogeneousPlacementContractRequest",
+    "PlacementTarget",
+    "PlacementWeights",
+    "PrivacyLevel",
+    "WorkloadSpec",
+]
