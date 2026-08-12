@@ -2,14 +2,19 @@ name: tests
 on:
   push:
   pull_request:
+
 jobs:
-  pytest:
+  behavior:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -r requirements.txt
+      - run: python -m pip install -e . pytest
       - run: python -m pytest -q
-      - run: python scripts/operate.py
+      - name: run concrete placement demo
+        run: python scripts/operate.py
+      - name: exercise installed placement CLI
+        run: |
+          printf '%s\n' '{"subject_id":"ci-placement","budget":1.0,"workload":{"compute_tflops":20,"memory_gb":16,"bandwidth_gbps":25,"max_latency_ms":15,"device":"gpu","privacy":"trusted","required_features":["fp16"]},"targets":[{"id":"gpu-a","device":"gpu","compute_tflops":80,"memory_gb":64,"available_memory_gb":48,"bandwidth_gbps":100,"latency_ms":5,"power_watts":300,"utilization":0.25,"privacy":"trusted","cost_per_hour":0.5,"available":true,"features":["fp16","bf16"]}]}' | hetero-place
