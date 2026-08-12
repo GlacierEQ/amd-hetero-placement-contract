@@ -1,12 +1,49 @@
 {
-  "schema": "glaciereq.repo-capabilities.v1",
+  "schema": "glaciereq.repo-capabilities.v2",
   "repository": "GlacierEQ/amd-hetero-placement-contract",
+  "status": "FUNCTIONAL",
   "capabilities": [
     {
-      "id": "hetero-placement-contract",
-      "name": "Heterogeneous Placement Contract",
-      "status": "SCAFFOLD",
-      "module": "src/hetero_placement_contract.py"
+      "id": "heterogeneous-feasibility-filter",
+      "status": "IMPLEMENTED",
+      "module": "src/hetero_placement_contract.py",
+      "behaviors": [
+        "compute_capacity",
+        "memory_capacity",
+        "memory_bandwidth",
+        "network_capacity",
+        "latency_slo",
+        "power_limit",
+        "privacy_clearance",
+        "required_features",
+        "availability",
+        "budget",
+        "grant_expiry"
+      ]
+    },
+    {
+      "id": "deterministic-placement-ranking",
+      "status": "IMPLEMENTED",
+      "module": "src/hetero_placement_contract.py",
+      "behaviors": [
+        "latency_margin_scoring",
+        "power_margin_scoring",
+        "memory_locality_scoring",
+        "network_headroom_scoring",
+        "cost_headroom_scoring",
+        "architecture_preference",
+        "deterministic_tie_break"
+      ]
+    },
+    {
+      "id": "placement-cli",
+      "status": "IMPLEMENTED",
+      "entrypoint": "hetero-place",
+      "behaviors": ["json_file_input", "stdin_input", "structured_receipt", "process_exit_status"]
     }
+  ],
+  "proof_surfaces": [
+    "tests/test_hetero_placement_contract.py",
+    ".github/workflows/tests.yml"
   ]
 }
