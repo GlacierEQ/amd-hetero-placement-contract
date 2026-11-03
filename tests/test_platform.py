@@ -1,9 +1,17 @@
 """Auto-generated tests for Cloud AI Platform Engineering."""
 import sys
+import time
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from amd_hetero_placement_contract.core import CircuitState, SLOTarget, CircuitBreaker, CostBudget
+from amd_hetero_placement_contract.core import (
+    CircuitBreaker,
+    CircuitState,
+    CostBudget,
+    SLOTarget,
+)
+
 
 def test_slo_met():
     slo = SLOTarget("availability", 0.999)
@@ -29,7 +37,7 @@ def test_circuit_breaker_success_resets():
     cb.record_failure()
     cb.record_failure()
     # After timeout, goes half-open
-    import time; time.sleep(0.01)
+    time.sleep(0.01)
     assert cb.state == CircuitState.HALF_OPEN
     cb.record_success()
     assert cb.state == CircuitState.CLOSED

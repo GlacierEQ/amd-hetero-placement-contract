@@ -40,6 +40,49 @@ Feasible targets are scored with transparent components for:
 
 Ties are resolved by target id, so equivalent inputs remain deterministic.
 
+## Epistemology / Verification
+
+This repository is graded on three verification levels. Status reflects what has
+actually been run and checked in this repository, not aspiration.
+
+- **L0 (Presence):** files exist and are importable. **Verified** — package
+  imports cleanly (`PYTHONPATH=src`) and the CLI entry point resolves.
+- **L1 (Structure):** classes and functions exist with their declared
+  signatures. **Verified** — `HeterogeneousPlacementContract`, `ImpactVector`,
+  `CircuitBreaker`, `CostBudget`, and related dataclasses instantiate with
+  documented parameters.
+- **L2 (Behavior):** tests pass, lint is clean, demo runs. **Verified** —
+  `29` tests pass (`PYTHONPATH=src pytest tests/ -v`); `ruff check src/ tests/`
+  reports 0 errors; `python scripts/operate.py` runs the concrete demo.
+
+### Aspirational (L0/L1 only, not L2)
+
+The following are described or scaffolded but are **not** verified at L2 in this
+repository:
+
+- Real AMD hardware benchmark claims (this is a reproducible placement
+  algorithm using caller-supplied measurements; no hardware measurements are
+  made).
+- Live telemetry providers connected to the placement contract (provider surface
+  is not implemented here).
+- Hosted service / deployment runtime (this is a reusable component, not a
+  service).
+- Any affiliation or endorsement by AMD.
+
+### Verification commands
+
+```bash
+PYTHONPATH=src pytest tests/ -v
+ruff check src/ tests/
+python scripts/operate.py
+```
+
+### Not claimed
+
+No external deployment, production readiness, or vendor affiliation is claimed.
+This repository is an independent GlacierEQ portfolio implementation and is not
+affiliated with or endorsed by AMD.
+
 ## Install
 
 ```bash

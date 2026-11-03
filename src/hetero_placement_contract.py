@@ -18,7 +18,7 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, ClassVar
 
 
 def _digest(obj: object) -> str:
@@ -42,9 +42,9 @@ class HeterogeneousPlacementContractRequest:
     subject_id: str
     payload: dict[str, Any] = field(default_factory=dict)
     budget: float = 1.0
-    grant_id: Optional[str] = None
-    not_after: Optional[float] = None
-    now: Optional[float] = None
+    grant_id: str | None = None
+    not_after: float | None = None
+    now: float | None = None
 
 
 @dataclass(frozen=True)
@@ -73,8 +73,8 @@ class HeterogeneousPlacementContract:
     """Filter infeasible targets and rank feasible ones deterministically."""
 
     MIN_BUDGET = 0.0
-    PRIVACY_LEVEL = {"public": 0, "trusted": 1, "local": 2, "restricted": 3}
-    WEIGHTS = {
+    PRIVACY_LEVEL: ClassVar[dict[str, int]] = {"public": 0, "trusted": 1, "local": 2, "restricted": 3}
+    WEIGHTS: ClassVar[dict[str, float]] = {
         "latency": 0.25,
         "compute_headroom": 0.20,
         "memory_headroom": 0.15,
@@ -91,7 +91,7 @@ class HeterogeneousPlacementContract:
         key: str,
         *,
         minimum: float = 0.0,
-    ) -> tuple[Optional[float], Optional[str]]:
+    ) -> tuple[float | None, str | None]:
         try:
             value = float(obj[key])
         except (KeyError, TypeError, ValueError):
@@ -109,7 +109,7 @@ class HeterogeneousPlacementContract:
         normalized = tuple(sorted({str(item).strip().lower() for item in value if str(item).strip()}))
         return normalized, []
 
-    def _normalize_workload(self, raw: Any) -> tuple[Optional[dict[str, Any]], list[str]]:
+    def _normalize_workload(self, raw: Any) -> tuple[dict[str, Any] | None, list[str]]:
         if not isinstance(raw, Mapping):
             return None, ["workload_missing"]
 
@@ -164,7 +164,7 @@ class HeterogeneousPlacementContract:
             result["max_power_watts"] = max_power
         return result, []
 
-    def _normalize_target(self, raw: Any, index: int) -> tuple[Optional[dict[str, Any]], list[str]]:
+    def _normalize_target(self, raw: Any, index: int) -> tuple[dict[str, Any] | None, list[str]]:
         if not isinstance(raw, Mapping):
             return None, [f"target_{index}_not_object"]
 
@@ -503,13 +503,13 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(argv: Optional[Sequence[str]] = None) -> int:
+def main(argv: Sequence[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
     raw = args.input.read_text(encoding="utf-8") if args.input else sys.stdin.read()
     try:
         parsed = json.loads(raw)
         if not isinstance(parsed, Mapping):
-            raise ValueError("request must be a JSON object")
+            raise TypeError("request must be a JSON object")
         request = request_from_mapping(parsed)
         receipt = HeterogeneousPlacementContract().evaluate(request)
         output = receipt.as_dict()

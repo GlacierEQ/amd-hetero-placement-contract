@@ -1,6 +1,9 @@
 from __future__ import annotations
+
 import unittest
+
 from src.impact_assurance import ImpactVector, assess, rank
+
 
 class ImpactAssuranceTests(unittest.TestCase):
     def test_high_value_contained_change_compounds(self):

@@ -1,9 +1,9 @@
 """Cloud AI Platform Engineering — Core Module"""
 
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum, auto
-from typing import Optional
+
 
 class CircuitState(Enum):
     CLOSED = auto()     # Normal operation
@@ -29,14 +29,17 @@ class CircuitBreaker:
         self.recovery_timeout = recovery_timeout
         self._state = CircuitState.CLOSED
         self._failure_count = 0
-        self._last_failure_time: Optional[float] = None
+        self._last_failure_time: float | None = None
         self._success_count = 0
 
     @property
     def state(self) -> CircuitState:
-        if self._state == CircuitState.OPEN and self._last_failure_time:
-            if time.time() - self._last_failure_time > self.recovery_timeout:
-                self._state = CircuitState.HALF_OPEN
+        if (
+            self._state == CircuitState.OPEN
+            and self._last_failure_time
+            and time.time() - self._last_failure_time > self.recovery_timeout
+        ):
+            self._state = CircuitState.HALF_OPEN
         return self._state
 
     def record_success(self) -> None:
